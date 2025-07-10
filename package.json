@@ -1,0 +1,55 @@
+{
+  "name": "tamil-bamini-converter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "prestart": "electron-rebuild",
+    "start": "electron .",
+    "package": "electron-packager . TamilBaminiConverter --platform=win32 --arch=x64 --electron-version=37.2.0 --overwrite --icon=assets/icon.ico --out=dist"
+  },
+  "keywords": [],
+  "author": {
+    "name": "Pakeetharan",
+    "email": "bpakee@gmail.com"
+  },
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "node-get-selected-text": "^0.1.9",
+    "robotjs": "^0.6.0"
+  },
+  "devDependencies": {
+    "electron": "^37.2.0",
+    "electron-packager": "^17.1.2"
+  },
+  "build": {
+    "appId": "com.pakee.tamilunicodebamini",
+    "productName": "TamilBaminiConverter",
+    "artifactName": "${productName}-Setup-${version}.${ext}",
+    "copyright": "© 2025 Pakeetharan",
+    "files": [
+      "**/*"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "icon": "assets/icon.ico",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "electronVersion": "37.2.0",
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "TamilBaminiConverter"
+    }
+  }
+}
