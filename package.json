@@ -1,12 +1,13 @@
 {
   "name": "tamil-bamini-converter",
   "version": "1.0.0",
-  "description": "",
+  "description": "A desktop application to convert between Tamil Unicode and Bamini font.",
   "main": "index.js",
   "scripts": {
     "prestart": "electron-rebuild",
-    "start": "electron .",
-    "package": "electron-packager . TamilBaminiConverter --platform=win32 --arch=x64 --electron-version=37.2.0 --overwrite --icon=assets/icon.ico --out=dist"
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make --platform=win32 --arch=x64"
   },
   "keywords": [],
   "author": {
@@ -20,36 +21,39 @@
     "robotjs": "^0.6.0"
   },
   "devDependencies": {
+    "@electron-forge/cli": "^7.5.0",
+    "@electron-forge/maker-squirrel": "^7.5.0",
+    "@electron-forge/maker-zip": "^7.5.0",
     "electron": "^37.2.0",
-    "electron-packager": "^17.1.2"
+    "electron-rebuild": "^3.2.9"
   },
-  "build": {
-    "appId": "com.pakee.tamilunicodebamini",
-    "productName": "TamilBaminiConverter",
-    "artifactName": "${productName}-Setup-${version}.${ext}",
-    "copyright": "© 2025 Pakeetharan",
-    "files": [
-      "**/*"
-    ],
-    "directories": {
-      "buildResources": "assets"
-    },
-    "win": {
-      "target": [
-        "nsis",
-        "portable"
-      ],
-      "icon": "assets/icon.ico",
-      "requestedExecutionLevel": "asInvoker"
-    },
-    "electronVersion": "37.2.0",
-    "nsis": {
-      "oneClick": false,
-      "perMachine": false,
-      "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true,
-      "shortcutName": "TamilBaminiConverter"
+  "config": {
+    "forge": {
+      "packagerConfig": {
+        "appId": "com.pakee.tamilunicodebamini",
+        "name": "TamilBaminiConverter",
+        "icon": "assets/icon.ico",
+        "executableName": "TamilBaminiConverter",
+        "asar": true,
+        "overwrite": true
+      },
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "TamilBaminiConverter",
+            "setupExe": "TamilBaminiConverter-Setup-${version}.exe",
+            "setupIcon": "assets/icon.ico",
+            "shortcutName": "TamilBaminiConverter"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "win32"
+          ]
+        }
+      ]
     }
   }
 }

@@ -6,6 +6,7 @@ package-lock.json
 
 # Electron build output
 dist/
+out/
 
 # Native module build artifacts
 build/
