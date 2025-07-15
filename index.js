@@ -85,7 +85,7 @@ app.whenReady().then(() => {
   tray.setToolTip("Tamil Unicode to Bamini");
   tray.setContextMenu(contextMenu);
 
-  globalShortcut.register("Control+Alt+B", () => {
+  globalShortcut.register("Shift+Alt+V", () => {
     try {
       // Step 1: Copy selected text
       robot.keyTap("c", ["control"]);
@@ -101,10 +101,12 @@ app.whenReady().then(() => {
 
         // Step 2: Convert
         const converted = unicodeToBamini(selectedText);
-        console.log(converted);
-        clipboard.writeText(converted, "selection");
 
-        // Step 3: Paste
+        // Step 3: Write to clipboard as RTF with Bamini font
+        const rtfContent = toRTF(converted);
+        clipboard.write({ text: converted, rtf: rtfContent });
+
+        // Step 4: Paste
         robot.keyTap("v", ["control"]);
 
         new Notification({
@@ -118,6 +120,24 @@ app.whenReady().then(() => {
     }
   });
 });
+
+function toRTF(text, fontName = "Bamini") {
+  const toUnicodeRTF = (str) =>
+    str
+      .split("")
+      .map((char) => {
+        const code = char.charCodeAt(0);
+        if (code === 10 || code === 13) return "\\par "; // Handle newlines
+        if (code === 32) return " "; // space
+        if (code === 0) return ""; // null character
+        return `\\u${code}?`;
+      })
+      .join("");
+
+  return `{\\rtf1\\ansi\\deff0{\\fonttbl{\\f0\\fnil\\fcharset0 ${fontName};}}\\f0\\fs24 ${toUnicodeRTF(
+    text
+  )}}`;
+}
 
 app.on("will-quit", () => {
   globalShortcut.unregisterAll();
