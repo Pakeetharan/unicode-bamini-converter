@@ -1,6 +1,6 @@
 {
   "name": "tamil-bamini-converter",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A desktop application to convert between Tamil Unicode and Bamini font.",
   "main": "index.js",
   "scripts": {
@@ -17,6 +17,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "electron-squirrel-startup": "^1.0.1",
     "node-get-selected-text": "^0.1.9",
     "robotjs": "^0.6.0"
   },
@@ -44,7 +45,11 @@
             "name": "TamilBaminiConverter",
             "setupExe": "TamilBaminiConverter-Setup-${version}.exe",
             "setupIcon": "assets/icon.ico",
-            "shortcutName": "TamilBaminiConverter"
+            "shortcutName": "TamilBaminiConverter",
+            "allowToChangeInstallationDirectory": true,
+            "perMachine": false,
+            "oneClick": false,
+            "noMsi": true
           }
         },
         {

@@ -1,9 +1,50 @@
 const { app, Tray, Menu, globalShortcut, Notification } = require("electron");
 const path = require("path");
+const { exec } = require("child_process");
 const robot = require("robotjs");
 const { clipboard } = require("electron");
 const { getSelectedText } = require("node-get-selected-text");
 const unicodeToBamini = require("./convert");
+
+// Handle Squirrel.Windows events for desktop shortcut
+if (require("electron-squirrel-startup")) {
+  app.quit();
+  return;
+}
+
+// Track autostart state
+let isAutoStartEnabled = true;
+
+// Set initial autostart state
+if (process.platform === "win32") {
+  app.setLoginItemSettings({
+    openAtLogin: isAutoStartEnabled,
+    path: process.execPath,
+    args: [],
+  });
+}
+
+// Create desktop shortcut on install or update
+if (process.platform === "win32") {
+  const squirrelEvent = process.argv[1];
+  if (
+    squirrelEvent === "--squirrel-install" ||
+    squirrelEvent === "--squirrel-updated"
+  ) {
+    const shortcutPath = path.join(
+      process.env.USERPROFILE,
+      "Desktop",
+      "TamilBaminiConverter.lnk"
+    );
+    const exePath = process.execPath;
+    exec(
+      `powershell -Command "$ws = (New-Object -ComObject WScript.Shell); $s = $ws.CreateShortcut('${shortcutPath}'); $s.TargetPath = '${exePath}'; $s.Save()"`,
+      (err) => {
+        if (err) console.error("Failed to create desktop shortcut:", err);
+      }
+    );
+  }
+}
 
 let tray = null;
 
@@ -11,7 +52,36 @@ app.whenReady().then(() => {
   app.setName("TamilBaminiConverter");
   tray = new Tray(path.join(__dirname, "assets/icon.ico"));
 
-  const contextMenu = Menu.buildFromTemplate([{ label: "Quit", role: "quit" }]);
+  // Build tray menu with autostart toggle
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: "Start on Login",
+      type: "checkbox",
+      checked: isAutoStartEnabled,
+      click: () => {
+        isAutoStartEnabled = !isAutoStartEnabled;
+        app.setLoginItemSettings({
+          openAtLogin: isAutoStartEnabled,
+          path: process.execPath,
+          args: [],
+        });
+        // Update menu to reflect new state
+        tray.setContextMenu(
+          Menu.buildFromTemplate([
+            {
+              label: "Start on Login",
+              type: "checkbox",
+              checked: isAutoStartEnabled,
+              click: arguments[0].click, // Reuse the same click handler
+            },
+            { label: "Quit", role: "quit" },
+          ])
+        );
+      },
+    },
+    { label: "Quit", role: "quit" },
+  ]);
+
   tray.setToolTip("Tamil Unicode to Bamini");
   tray.setContextMenu(contextMenu);
 
